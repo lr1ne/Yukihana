@@ -5,8 +5,6 @@ class DbdTeam(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
-
-    # да
     @components.select_listener()
     async def auth_listener(self, inter: disnake.MessageInteraction, selected: str = components.SelectValue("На каком языке вы говорите? | What language do you speak?")):
         if selected == "RU":
