@@ -9,9 +9,9 @@ class NSFW(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(
-        description="😀 Развлечения | Выводит рандомную картинку для взрослых (поиск на rule34)"
+        description="Поиск на rule34.xxx",
     )
-    async def nsfw(
+    async def rule34(
         self,
         inter,
         count: commands.Range[int, 0, 30] = commands.Param(1, description="Количество картинок для вывода"),
