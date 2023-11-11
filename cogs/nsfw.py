@@ -1,5 +1,5 @@
 import disnake
-from disnake.ext import commands, components
+from disnake.ext import commands
 import random
 import aiohttp
 import json
@@ -9,26 +9,23 @@ class NSFW(commands.Cog):
         self.bot = bot
 
     @commands.slash_command(
-        description="Поиск на rule34.xxx",
+        description="Поиск картинок на rule34.xxx", 
     )
     async def rule34(
         self,
         inter,
-        count: commands.Range[int, 0, 30] = commands.Param(1, description="Количество картинок для вывода"),
+        count: commands.Range(int, 0, 30) = commands.Param(1, description="Количество картинок для вывода"),
         tags: str = commands.Param(
             name="поиск",
             description="Укажите тег для поиска, например: boy",
-        ),
-        id: int = commands.Param(
-            None,
-            description="Укажите ID публикации (при неверном ID будет показана рандомная картинка)",
-        ),
+        )
     ):
         if inter.channel.is_nsfw():
             await inter.response.defer()
 
             results = []
 
+            tags_message = f"Теги: {tags}\n"
             for _ in range(count):
                 if id is None:
                     async with aiohttp.request(
@@ -44,7 +41,7 @@ class NSFW(commands.Cog):
                         data = await resp.json()
 
                 if data is None:
-                    return await inter.edit_original_message(
+                    return await inter.send(
                         embed=disnake.Embed(
                             description="Результаты не найдены, попробуйте поискать с помощью таких тегов как:\n `cum penis anal gay` через пробел",
                             color=0x2b2d31,
@@ -56,20 +53,18 @@ class NSFW(commands.Cog):
                 result = {"url": data[rand]["file_url"]}
                 results.append(result)
 
-            chunk_size = 10
-            for i in range(0, len(results), chunk_size):
-                chunk = results[i:i+chunk_size]
-                messages = []
-                for result in chunk:
-                    messages.append(f"Теги: {tags} \n{result['url']}")
-                await inter.send(content="\n".join(messages))
+            messages = [tags_message]
+            for i, result in enumerate(results, start=1):
+                messages.append(f"[{i}] {result['url']}")
+
+            await inter.send(content="\n".join(messages))
 
         else:
             embed = disnake.Embed(
                 description="Никакого NSFW в данном канале - только чистый и здоровый контент!",
                 color=0x2b2d31,
             )
-            await inter.edit_original_message(embed=embed)
+            await inter.send(embed=embed)
 
 def setup(bot):
     bot.add_cog(NSFW(bot))
