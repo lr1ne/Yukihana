@@ -11,6 +11,7 @@ class NSFW(commands.Cog):
     @commands.slash_command(
         description="Поиск картинок на rule34.xxx", 
     )
+    @commands.is_nsfw()
     async def rule34(
         self,
         inter,
@@ -20,51 +21,43 @@ class NSFW(commands.Cog):
             description="Укажите тег для поиска, например: boy",
         )
     ):
-        if inter.channel.is_nsfw():
-            await inter.response.defer()
+        await inter.response.defer()
 
-            results = []
+        results = []
 
-            tags_message = f"Теги: {tags}\n"
-            for _ in range(count):
-                if id is None:
-                    async with aiohttp.request(
-                        "GET",
-                        f"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=1000&tags={tags}&json=1",
-                    ) as resp:
-                        data = await resp.json()
-                else:
-                    async with aiohttp.request(
-                        "GET",
-                        f"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&id={id}&json=1",
-                    ) as resp:
-                        data = await resp.json()
+        tags_message = f"Теги: {tags}\n"
+        for _ in range(count):
+            if id is None:
+                async with aiohttp.request(
+                    "GET",
+                    f"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&limit=1000&tags={tags}&json=1",
+                ) as resp:
+                    data = await resp.json()
+            else:
+                async with aiohttp.request(
+                    "GET",
+                    f"https://api.rule34.xxx/index.php?page=dapi&s=post&q=index&id={id}&json=1",
+                ) as resp:
+                    data = await resp.json()
 
-                if data is None:
-                    return await inter.send(
-                        embed=disnake.Embed(
-                            description="Результаты не найдены, попробуйте поискать с помощью таких тегов как:\n `cum penis anal gay` через пробел",
-                            color=0x2b2d31,
-                        ),
-                    )
+            if data is None:
+                return await inter.send(
+                    embed=disnake.Embed(
+                        description="Результаты не найдены.",
+                        color=0x2b2d31,
+                    ),
+                )
 
-                keyses = len(data) - 1
-                rand = random.randint(0, keyses)
-                result = {"url": data[rand]["file_url"]}
-                results.append(result)
+            keyses = len(data) - 1
+            rand = random.randint(0, keyses)
+            result = {"url": data[rand]["file_url"]}
+            results.append(result)
 
-            messages = [tags_message]
-            for i, result in enumerate(results, start=1):
-                messages.append(f"[{i}] {result['url']}")
+        messages = [tags_message]
+        for i, result in enumerate(results, start=1):
+            messages.append(f"[{i}] {result['url']}")
 
-            await inter.send(content="\n".join(messages))
-
-        else:
-            embed = disnake.Embed(
-                description="Никакого NSFW в данном канале - только чистый и здоровый контент!",
-                color=0x2b2d31,
-            )
-            await inter.send(embed=embed)
+        await inter.send(content="\n".join(messages))
 
 def setup(bot):
     bot.add_cog(NSFW(bot))
