@@ -40,4 +40,4 @@ async def reload(inter, module: str = commands.Param(description="Названи
     bot.reload_extension(f"cogs.{module}")
     await inter.send(f"Перезагружен модуль `{module}`", ephemeral=True)
 
-bot.run(settings['token'])
+bot.run(settings['btoken'])

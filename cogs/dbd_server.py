@@ -13,7 +13,7 @@ class DbdTeam(commands.Cog):
             await inter.response.send_message("ты англичанин", ephemeral=True)
 
     @components.button_listener()
-    async def auth_listener(self, inter: disnake.MessageInteraction):
+    async def secret_listener(self, inter: disnake.MessageInteraction):
         auth_options = [
             disnake.SelectOption(label='RU', value='RU'),
             disnake.SelectOption(label='EN', value='EN')
@@ -21,7 +21,7 @@ class DbdTeam(commands.Cog):
         select = disnake.ui.Select(
             placeholder="На каком языке вы говорите? | What language do you speak?",
             options=auth_options,
-            custom_id=await self.auth_select(),
+            custom_id=await self.auth_listener.build_custom_id(),
         )
 
         embed = disnake.Embed(title="Language Selection")
@@ -46,11 +46,11 @@ class DbdTeam(commands.Cog):
         embed.set_footer(
             text=":flag_ru: Нажмите на кнопку ниже, чтобы выбрать язык.\n:flag_us: Click the button below to select a language."
         )
-        await inter.response.send_message(
+        await inter.send(
             embed=embed,
             components=disnake.ui.Button(
                 label="✅",
-                custom_id=self.secret_listener.build_custom_id()
+                custom_id=await self.secret_listener.build_custom_id()
             )
         )
 
