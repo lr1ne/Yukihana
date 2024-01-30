@@ -9,7 +9,7 @@ class Yukihana(commands.Bot):
 
     async def on_ready(self):
         print("Запущен!")
-
+        
 bot = Yukihana(
     command_prefix=settings['prefix'],
     intents=disnake.Intents.all(),
@@ -18,7 +18,7 @@ bot = Yukihana(
 
 list_cogs = [filename[:-3] for filename in listdir("./cogs") if filename.endswith(".py")]
 for cog in list_cogs: bot.load_extension(f"cogs.{cog}")
-
+bot.load_extension('jishaku')
 
 @bot.slash_command(description=f'Загрузить модуль бота')
 @commands.is_owner()
