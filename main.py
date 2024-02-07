@@ -1,6 +1,7 @@
 from disnake.ext import commands
 from os import listdir
 import disnake
+import aiohttp
 from config import settings
 
 class Yukihana(commands.Bot):
@@ -8,7 +9,20 @@ class Yukihana(commands.Bot):
         super().__init__(*args, **kwargs)
 
     async def on_ready(self):
-        print("Запущен!")
+        print(f'Logged in as {bot.user}')
+        # # URL of the animated avatar
+        # avatar_url = 'https://media1.tenor.com/m/PFeI000LYHkAAAAC/boy-kisser-boykisser.gif'
+        # try:
+        #     async with aiohttp.ClientSession() as session:
+        #         async with session.get(avatar_url) as response:
+        #             if response.status == 200:
+        #                 avatar_data = await response.read()
+        #                 await bot.user.edit(avatar=avatar_data)
+        #                 print('Animated avatar uploaded successfully!')
+        #             else:
+        #                 print('Failed to download avatar:', response.status)
+        # except Exception as e:
+        #     print('Failed to upload animated avatar:', e)
         
 bot = Yukihana(
     command_prefix=settings['prefix'],
